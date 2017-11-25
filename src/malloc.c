@@ -6,7 +6,7 @@
 /*   By: tglandai <tglandai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/25 14:11:41 by tglandai          #+#    #+#             */
-/*   Updated: 2017/11/25 21:36:03 by tglandai         ###   ########.fr       */
+/*   Updated: 2017/11/25 21:59:19 by tglandai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ t_block		extend_heap(t_block last, size_t size)
 		return (NULL);
 	if (last)
 		last->next = block;
+	block->prev = last;
 	block->free = 0;
 	return (block);
 }

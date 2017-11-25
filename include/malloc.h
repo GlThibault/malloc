@@ -6,7 +6,7 @@
 /*   By: tglandai <tglandai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/25 14:12:15 by tglandai          #+#    #+#             */
-/*   Updated: 2017/11/25 21:42:17 by tglandai         ###   ########.fr       */
+/*   Updated: 2017/11/25 22:53:55 by tglandai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ struct			s_block {
 	t_block		next;
 	t_block		prev;
 	int			free;
-	void		*ptr;
 	char		data[1];
 };
 
