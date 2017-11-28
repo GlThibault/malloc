@@ -6,11 +6,12 @@
 /*   By: tglandai <tglandai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/25 14:11:41 by tglandai          #+#    #+#             */
-/*   Updated: 2017/11/25 21:59:19 by tglandai         ###   ########.fr       */
+/*   Updated: 2017/11/28 19:19:35 by tglandai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
+#include <stdio.h>
 
 void		split_block(t_block block, size_t size)
 {
@@ -20,7 +21,7 @@ void		split_block(t_block block, size_t size)
 	new->size = block->size - size - BLOCK_SIZE;
 	new->next = block->next;
 	new->free = 1;
-	block->size = size;
+	printf("%zu\n", size);
 	block->next = new;
 }
 
@@ -46,8 +47,11 @@ t_block		extend_heap(t_block last, size_t size)
 		return (NULL);
 	if (last)
 		last->next = block;
+	block->next = NULL;
+	block->size = size;
 	block->prev = last;
 	block->free = 0;
+	block->ptr = block->data;
 	return (block);
 }
 
@@ -90,7 +94,6 @@ t_block		allocate(t_block allocation, size_t size, size_t malloc_size)
 
 void		*malloc(size_t size)
 {
-	static t_alloc	global = NULL;
 	t_block			block;
 
 	block = NULL;
@@ -107,8 +110,14 @@ void		*malloc(size_t size)
 		if (!(block = allocate(global->small, size, SMALL)))
 			return (NULL);
 	}
-	else if (!(block = mmap(0, size, PROT_READ | PROT_WRITE,
+	else
+	{
+		if (!(block = mmap(0, size, PROT_READ | PROT_WRITE,
 							MAP_ANON | MAP_PRIVATE, -1, 0)))
-		return (NULL);
+			return (NULL);
+		block->size = size;
+	}
+	printf("block %p\n", block);
+	block->ptr = &block;
 	return (block->data);
 }

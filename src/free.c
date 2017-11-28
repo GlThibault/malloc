@@ -6,22 +6,13 @@
 /*   By: tglandai <tglandai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/25 14:25:40 by tglandai          #+#    #+#             */
-/*   Updated: 2017/11/25 23:08:28 by tglandai         ###   ########.fr       */
+/*   Updated: 2017/11/28 19:06:49 by tglandai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
 
 #include <stdio.h>
-t_block		get_block(void *ptr)
-{
-	char	*tmp;
-
-	tmp = ptr;
-	printf("%s\n", tmp);
-	return (ptr = tmp -= BLOCK_SIZE);
-}
-
 t_block		fusion(t_block block)
 {
 	if (block->next && block->next->free)
@@ -34,24 +25,37 @@ t_block		fusion(t_block block)
 	return (block);
 }
 
-void    free(void *ptr)
+t_block		get_block(void *ptr)
 {
 	t_block		block;
 
-	block = get_block(ptr);
-	printf("%p\n", block);
-	block->free = 1;
-	if (block->prev && block->prev->free)
-		block = fusion(block->prev);
-	printf("1\n");
-	if (block->next)
-		fusion(block);
-	else
+	block = global->tiny;
+	printf("test\n");
+	printf("%p\n", global->tiny);
+	printf("%p\n", block->data);
+	while (block && block->ptr != ptr)
 	{
-		if (block->prev)
-			block->prev->next = NULL;
-		else
-			block = NULL;
-		munmap(&block->data, block->size);
+		block = block->next;
+	printf("--%s\n", ptr);
+	printf("--%s\n", block->ptr);
+	printf("test\n");
 	}
-};
+	if (block && block->ptr == ptr)
+	printf("fdglkhdfk\n");
+	return ((t_block)ptr);
+}
+
+void    free(void *ptr)
+{
+	t_block		block;
+	if (!ptr || !global)
+		return;
+
+	block = get_block(ptr);
+
+	printf("%p\n", ptr);
+	printf("%p\n", block);
+	printf("%zu\n", block->size);
+	block->free = 1;
+	printf("%d\n", munmap(&block, block->size));
+}
