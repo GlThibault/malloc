@@ -6,35 +6,23 @@
 /*   By: tglandai <tglandai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/25 14:11:41 by tglandai          #+#    #+#             */
-/*   Updated: 2017/11/28 19:19:35 by tglandai         ###   ########.fr       */
+/*   Updated: 2017/11/29 22:57:23 by tglandai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
-#include <stdio.h>
-
-void		split_block(t_block block, size_t size)
-{
-	t_block	new;
-
-	new = (t_block)(block->data + size);
-	new->size = block->size - size - BLOCK_SIZE;
-	new->next = block->next;
-	new->free = 1;
-	printf("%zu\n", size);
-	block->next = new;
-}
 
 t_block		find_block(t_block allocation, t_block *last, size_t size)
 {
 	t_block	block;
 
 	block = allocation;
-	while (block && !(block->free && block->size >= size))
+	while (block && block->size <= size + BLOCK_SIZE && !block->free)
 	{
 		*last = block;
 		block = block->next;
 	}
+	if (block)
 	return (block);
 }
 
@@ -50,7 +38,6 @@ t_block		extend_heap(t_block last, size_t size)
 	block->next = NULL;
 	block->size = size;
 	block->prev = last;
-	block->free = 0;
 	block->ptr = block->data;
 	return (block);
 }
@@ -62,15 +49,14 @@ t_block		new_allocation(t_block allocation, size_t size, size_t malloc_size)
 
 	last = allocation;
 	block = find_block(allocation, &last, size);
-	if (block)
+	if (block && (block->size - size) >= (BLOCK_SIZE + 4))
 	{
-		if ((block->size - size) >= (BLOCK_SIZE + 4))
-			split_block(block, size);
+		block = split_block(block, size);
 		block->free = 0;
 	}
 	else
 	{
-		if (!(block = extend_heap(allocation, malloc_size)))
+		if (!(block = extend_heap(last, malloc_size)))
 			return (NULL);
 	}
 	return (block);
@@ -86,6 +72,10 @@ t_block		allocate(t_block allocation, size_t size, size_t malloc_size)
 		if (!(allocation = extend_heap(NULL, malloc_size)))
 			return (NULL);
 		block = allocation;
+		if (size < TINY)
+			global->tiny = allocation;
+		else if (size < SMALL)
+			global->small = allocation;
 	}
 	else if (!(block = new_allocation(allocation, size, malloc_size)))
 		return (NULL);
@@ -117,7 +107,8 @@ void		*malloc(size_t size)
 			return (NULL);
 		block->size = size;
 	}
-	printf("block %p\n", block);
-	block->ptr = &block;
+	block->ptr = &block->data;
+	printf("%lu\n", block->size);
+		// printf("%p\n", block);
 	return (block->data);
 }

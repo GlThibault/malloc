@@ -6,7 +6,7 @@
 #    By: tglandai <tglandai@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/25 14:16:54 by tglandai          #+#    #+#              #
-#    Updated: 2017/11/25 20:53:38 by tglandai         ###   ########.fr        #
+#    Updated: 2017/11/29 22:11:59 by tglandai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,13 +17,14 @@ endif
 NAME = libft_malloc_$(HOSTTYPE).so
 
 SRC_PATH = src
-SRC_NAME = malloc.c free.c realloc.c
+SRC_NAME = malloc.c free.c realloc.c ft_malloc.c
 
 OBJ_PATH = obj
 OBJ_NAME = $(SRC_NAME:.c=.o)
 
 CC = clang
-CFLAGS = -Wall -Werror -Wextra
+# CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Wextra
 
 CPPFLAGS = -I include -I libft/include
 
